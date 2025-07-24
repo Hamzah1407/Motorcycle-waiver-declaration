@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام إقرار نقل ملكية دراجة نارية</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Arial:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+
+      .print-area,
+      .print-area * {
+        visibility: visible;
+      }
+
+      .print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    .card-size {
+      width: 85.6mm;
+      height: 54mm;
+      transform: scale(1);
+    }
+
+    .card-size,
+    .card-size * {
+      box-sizing: border-box;
+      transform: none !important;
+    }
+
+    .card-text {
+      font-family: Arial, sans-serif !important;
+      text-rendering: optimizeLegibility !important;
+      -webkit-font-smoothing: antialiased !important;
+    }
+
+    .download-btn {
+      background: linear-gradient(135deg, #3498db);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+      background: linear-gradient(135deg, #2980b9);
+    }
+
+    .step-btn {
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .step-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+      background: linear-gradient(135deg, #27ae60, #219653);
+    }
+
+    .back-btn {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+      background: linear-gradient(135deg, #c0392b, #922b21);
+    }
+
+    .print-btn {
+      background: linear-gradient(135deg, #3e3be9, #3e3be9);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .print-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+      background: linear-gradient(135deg, #3330db, #3330db);
+    }
+
+    .card-preview {
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    .success-message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #27ae60;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      display: none;
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 to-gray-100 font-sans min-h-screen">
+  <div class="success-message" id="successMessage">
+    تم تنزيل البطاقة بنجاح!
+  </div>
+
+  <div class="container mx-auto p-4 max-w-4xl">
+    <!-- Header -->
+    <div class="bg-gray-700  rounded-xl shadow-xl p-6 mb-6 text-center">
+      <h1 class="text-3xl font-bold text-white mb-2">نظام إقرار نقل ملكية دراجة نارية</h1>
+      <p class="text-blue-100 text-center">نظام إلكتروني لإنشاء إقرار نقل ملكية الدراجات النارية وبطاقات الملكية
+      </p>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center">
+          <div id="step1-indicator"
+            class="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-lg">
+            1
+          </div>
+          <span class="mr-2 font-medium text-gray-700">إدخال البيانات</span>
+        </div>
+        <div class="flex-1 h-2 bg-gray-300 mx-4 rounded-full">
+          <div id="progress-bar-1" class="h-full bg-blue-500 transition-all duration-300 rounded-full"
+            style="width: 33.33%"></div>
+        </div>
+        <div class="flex items-center">
+          <div id="step2-indicator"
+            class="w-10 h-10 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center font-bold text-lg">
+            2</div>
+          <span class="mr-2 font-medium text-gray-600">عرض الإقرار</span>
+        </div>
+        <div class="flex-1 h-2 bg-gray-300 mx-4 rounded-full">
+          <div id="progress-bar-2" class="h-full bg-blue-500 transition-all duration-300 rounded-full"
+            style="width: 0%">
+          </div>
+        </div>
+        <div class="flex items-center">
+          <div id="step3-indicator"
+            class="w-10 h-10 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center font-bold text-lg">
+            3</div>
+          <span class="mr-2 font-medium text-gray-600">بطاقات الدراجة</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 1: Data Entry -->
+    <div id="step1" class="step-content">
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h2 class="text-2xl font-bold mb-6 text-blue-800 border-b pb-3">الرجاء ادخال البيانات المطلوبة</h2>
+
+        <!-- Section 1: Date and Declaration Number -->
+        <div class="mb-8 p-5 bg-gray-200 rounded-xl border border-blue-100">
+          <h3 class="text-lg font-semibold mb-4 text-blue-700">معلومات الإقرار</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">التاريخ</label>
+              <input type="date" id="declaration-date"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">رقم الإقرار</label>
+              <input type="text" id="declaration-number"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="MOC-0010">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">إصدار البطاقة</label>
+              <input type="text" id="card-version"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="OC-1" value="OC-1">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Seller Information -->
+        <div class="mb-8 p-5 bg-gray-200 rounded-xl border border-blue-100">
+          <h3 class="text-lg font-semibold mb-4 text-blue-700">بيانات البائع</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">اسم البائع</label>
+              <input type="text" id="seller-name"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="أدخل اسم البائع" value="صلاح محمد الجعدني">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">رقم هوية البائع</label>
+              <input type="text" id="seller-id"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="1234567890" value="1122334455">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">رقم هاتف البائع</label>
+              <input type="tel" id="seller-phone"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="05xxxxxxxx" value="0550123456">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Buyer Information -->
+        <div class="mb-8 p-5 bg-gray-200 rounded-xl border border-blue-100">
+          <h3 class="text-lg font-semibold mb-4 text-blue-700">بيانات المشتري</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">اسم المشتري</label>
+              <input type="text" id="buyer-name"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="أدخل اسم المشتري" value="صلاح محمد الجعدني">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">رقم هوية المشتري</label>
+              <input type="text" id="buyer-id"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="1234567890" value="9988776655">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">رقم هاتف المشتري</label>
+              <input type="tel" id="buyer-phone"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="05xxxxxxxx" value="0550654321">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Motorcycle Information -->
+        <div class="mb-8 p-5 bg-gray-200 rounded-xl border border-blue-100">
+          <h3 class="text-lg font-semibold mb-4 text-blue-700">بيانات الدراجة النارية</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">اسم الدراجة</label>
+              <input type="text" id="bike-name"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="ياماها بانشي" value="ياماها بانشي">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">رقم هيكل الدراجة</label>
+              <input type="text" id="bike-frame"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="JY43GG03X9C073589" value="JY43GG03X9C073589">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">رقم مكينة الدراجة</label>
+              <input type="text" id="bike-engine"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="----" value="ENG-123456">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">مقاس الدراجة</label>
+              <input type="text" id="bike-size"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="350" value="1000">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">سنة صنع الدراجة</label>
+              <input type="number" id="bike-year"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="2009" min="1900" max="2025" value="2022">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">لون الدراجة</label>
+              <input type="text" id="bike-color"
+                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="أحمر - أبيض" value="أزرق - أسود">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 5: Motorcycle Logo Upload -->
+        <div class="mb-8 p-5 bg-gray-200 rounded-xl border border-blue-100">
+          <h3 class="text-lg font-semibold mb-4 text-blue-700">شعار الدراجة النارية</h3>
+          <div class="flex items-center justify-center w-full">
+            <label for="bike-logo"
+              class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-blue-400 rounded-xl cursor-pointer bg-blue-50 hover:bg-blue-100 transition">
+              <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                <svg class="w-8 h-8 mb-4 text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                  fill="none" viewBox="0 0 20 16">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                </svg>
+                <p class="mb-2 text-sm text-blue-600"><span class="font-semibold">اضغط لرفع
+                    الشعار</span> أو اسحب الملف هنا</p>
+                <p class="text-xs text-blue-500">PNG, JPG أو JPEG (الحد الأقصى 2MB)</p>
+              </div>
+              <input id="bike-logo" type="file" class="hidden" accept="image/*" />
+            </label>
+          </div>
+          <div id="logo-preview" class="mt-4 hidden">
+            <img id="logo-image" class="max-w-32 max-h-32 mx-auto rounded-lg shadow-md" alt="شعار الدراجة">
+          </div>
+        </div>
+
+        <!-- Next Button -->
+        <div class="flex justify-end">
+          <button id="next-to-step2" class="step-btn">
+            عرض الإقرار
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Declaration Display -->
+    <div id="step2" class="step-content hidden">
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h2 class="text-2xl font-bold mb-6 text-blue-800 border-b pb-3">إقرار بيع وتنازل للدارجة النارية</h2>
+
+        <div id="declaration-content" class="print-area bg-white p-6 rounded-xl border border-gray-200">
+          <!-- Declaration content will be generated here -->
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-between mt-8 no-print">
+          <button id="back-to-step1" class="back-btn">
+            تعديل البيانات
+          </button>
+            <button id="print-declaration" class="print-btn">
+              طباعة
+            </button>
+            <button id="next-to-step3" class="step-btn">
+              عرض البطاقة
+            </button>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Motorcycle Cards -->
+    <div id="step3" class="step-content hidden">
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h2 class="text-2xl font-bold mb-10 text-blue-800 border-b pb-3">بطاقات الدراجة النارية</h2>
+        <div class="space-y-12">
+          <!-- Front Card -->
+          <div class="text-center">
+            <div id="card-front" class="card-size mx-auto bg-white relative card-preview">
+              <!-- Front card content will be generated here -->
+            </div>
+            <button id="download-front-card" class="download-btn mt-8">
+              تنزيل الوجه الأول
+            </button>
+          </div>
+
+          <!-- Back Card -->
+          <div class="text-center">
+            <div id="card-back" class="card-size mx-auto bg-gray-800 relative card-preview">
+              <!-- Back card content will be generated here -->
+            </div>
+            <button id="download-back-card" class="download-btn mt-8">
+              تنزيل الوجه الثاني
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-between mt-12">
+          <button id="back-to-step2" class="back-btn">
+            العودة للإقرار
+          </button>
+          <button id="download-both-cards" class="step-btn">
+            تنزيل البطاقتين
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+'use strict';
+
+// ================== الإعداد المبدئي ==================
+document.addEventListener('DOMContentLoaded', initializeSystem);
+
+function initializeSystem() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('declaration-date').value = today;
+
+  const randomNum = Math.floor(Math.random() * 9000) + 1000;
+  document.getElementById('declaration-number').value = `MOC-${randomNum}`;
+
+  setupEventListeners();
+}
+
+function setupEventListeners() {
+  document.getElementById('next-to-step2').addEventListener('click', () => {
+    if (validateStep1()) {
+      showStep(2);
+      generateDeclaration();
+    }
+  });
+
+  document.getElementById('back-to-step1').addEventListener('click', () => showStep(1));
+  document.getElementById('next-to-step3').addEventListener('click', () => {
+    showStep(3);
+    generateCards();
+  });
+  document.getElementById('back-to-step2').addEventListener('click', () => showStep(2));
+
+  document.getElementById('print-declaration').addEventListener('click', printDeclaration);
+
+  document.getElementById('bike-logo').addEventListener('change', handleLogoUpload);
+
+  document.getElementById('download-front-card').addEventListener('click', () => downloadCard('front'));
+  document.getElementById('download-back-card').addEventListener('click', () => downloadCard('back'));
+  document.getElementById('download-both-cards').addEventListener('click', downloadBothCards);
+}
+
+// ================== واجهة المستخدم ==================
+function showStep(stepNumber) {
+  document.querySelectorAll('.step-content').forEach(step => step.classList.add('hidden'));
+  document.getElementById(`step${stepNumber}`).classList.remove('hidden');
+  updateProgressIndicators(stepNumber);
+}
+
+function updateProgressIndicators(currentStep) {
+  for (let i = 1; i <= 3; i++) {
+    const indicator = document.getElementById(`step${i}-indicator`);
+    const progressBar = document.getElementById(`progress-bar-${i}`);
+
+    if (i < currentStep) {
+      indicator.className = 'w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-lg';
+      if (progressBar) progressBar.style.width = '100%';
+    } else if (i === currentStep) {
+      indicator.className = 'w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-lg';
+      if (progressBar) progressBar.style.width = '33.33%';
+    } else {
+      indicator.className = 'w-10 h-10 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center font-bold text-lg';
+      if (progressBar) progressBar.style.width = '0%';
+    }
+  }
+}
+
+function validateStep1() { return true; }
+
+// ================== رفع الشعار ==================
+function handleLogoUpload(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const preview = document.getElementById('logo-preview');
+      const image = document.getElementById('logo-image');
+      image.src = e.target.result;
+      preview.classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// ================== الإقرار ==================
+function collectFormData() {
+  return {
+    date: document.getElementById('declaration-date').value,
+    number: document.getElementById('declaration-number').value,
+    cardVersion: document.getElementById('card-version').value,
+    seller: {
+      name: document.getElementById('seller-name').value,
+      id: document.getElementById('seller-id').value,
+      phone: document.getElementById('seller-phone').value
+    },
+    buyer: {
+      name: document.getElementById('buyer-name').value,
+      id: document.getElementById('buyer-id').value,
+      phone: document.getElementById('buyer-phone').value
+    },
+    bike: {
+      name: document.getElementById('bike-name').value,
+      frame: document.getElementById('bike-frame').value,
+      engine: document.getElementById('bike-engine').value,
+      size: document.getElementById('bike-size').value,
+      year: document.getElementById('bike-year').value,
+      color: document.getElementById('bike-color').value
+    },
+    logo: document.getElementById('logo-image')?.src || null
+  };
+}
+
+function generateDeclaration() {
+  const data = collectFormData();
+  const declarationHTML = createDeclarationHTML(data);
+  document.getElementById('declaration-content').innerHTML = declarationHTML;
+}
+
+function createDeclarationHTML(data) {
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return date.toLocaleDateString('ar-SA', options);
+  };
+
+  const getDayName = (dateStr) => {
+    const date = new Date(dateStr);
+    const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    return days[date.getDay()];
+  };
+
+  return `
+    <div class="max-w-4xl mx-auto bg-white p-8 border border-gray-300">
+      <div class="flex justify-between items-start mb-6 pb-2 border-b-2 border-yellow-500">
+        <div class="text-right">
+          <h1 class="text-xl font-bold text-yellow-600">رود بايكر للدراجات النارية</h1>
+          <p class="text-sm text-gray-600">الرياض - جدة - حائل</p>
+          <p class="text-sm text-gray-600">0500123007</p>
+        </div>
+        <div class="text-left">
+          <h1 class="text-xl font-bold text-yellow-500">Road Biker Motorcycles</h1>
+          <p class="text-sm text-gray-600">Riyadh - Jeddah - Hail</p>
+          <p class="text-sm text-gray-600">0500123007</p>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center mb-6">
+        <div class="text-right">
+          <p class="text-sm">التاريخ: ${data.date.split('-').reverse().join(' / ')}</p>
+        </div>
+        <div class="text-left">
+          <p class="text-sm">الكود: ${data.number}</p>
+        </div>
+      </div>
+
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold">إقرار بيع وتنازل</h2>
+      </div>
+
+      <div class="space-y-4 text-justify leading-relaxed">
+        <p>الحمد لله، والصلاة والسلام على رسول الله، وعلى آله وصحبه أجمعين، أما بعد: تم بعون الله تعالى إتمام هذا الإقرار في يوم: <strong>${getDayName(data.date)}</strong> الموافق: <strong>${formatDate(data.date)}</strong> م بمدينة: <strong>حائل</strong></p>
+        <p>بين الطرفين التاليين:</p>
+
+        <div class="my-6 w-full flex flex-col items-center" dir="rtl">
+  <p class="mb-2 text-justify">
+    <strong>الطرف الأول (البائع):</strong>
+    ${data.seller.name}
+    <strong>رقم الهوية: </strong>${data.seller.id}
+    <strong>رقم الجوال: </strong>${data.seller.phone}
+  </p>
+  <p class="mb-2 text-justify">
+    <strong>الطرف الثاني (المشتري):</strong>
+    ${data.buyer.name}
+    <strong>رقم الهوية: </strong>${data.buyer.id}
+    <strong>رقم الجوال: </strong>${data.buyer.phone}
+  </p>
+</div>
+
+        <p>وقد أقرّ الطرف الأول (البائع) بأنه قد قام ببيع دراجته النارية الموضحة أدناه:</p>
+
+        <div class="my-6">
+          <table class="w-full border-collapse border border-gray-400">
+            <thead>
+              <tr class="bg-gray-100 text-center">
+                <th class="border border-gray-400 p-2">الدراجة</th>
+                <th class="border border-gray-400 p-2">الهيكل</th>
+                <th class="border border-gray-400 p-2">المحرك</th>
+                <th class="border border-gray-400 p-2">المقاس</th>
+                <th class="border border-gray-400 p-2">الموديل</th>
+                <th class="border border-gray-400 p-2">اللون</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="border border-gray-400 p-2 text-center">${data.bike.name}</td>
+                <td class="border border-gray-400 p-2 text-center">${data.bike.frame}</td>
+                <td class="border border-gray-400 p-2 text-center">${data.bike.engine || '----'}</td>
+                <td class="border border-gray-400 p-2 text-center">${data.bike.size}</td>
+                <td class="border border-gray-400 p-2 text-center">${data.bike.year}</td>
+                <td class="border border-gray-400 p-2 text-center">${data.bike.color}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>إلى الطرف الثاني (المشتري)، كما يقر الطرف الأول (البائع) باستلامه كامل المبلغ المتفق عليه خارج المعرض، ويتحمل كامل المسؤولية القانونية عن الدراجة حتى تاريخ هذا الإقرار. وبموجب ذلك، يتنازل تنازلاً نهائياً لا رجعة فيه عن ملكية الدراجة للطرف الثاني (المشتري)، وليس له بعد هذا التاريخ أي حق أو مطالبة بها.</p>
+      </div>
+
+      <div class="text-center mt-8 mb-6">
+        <p class="font-bold">والله ولي التوفيق...</p>
+      </div>
+
+      <div class="grid grid-cols-3 gap-8 mt-8">
+        <div class="text-center">
+          <p class="font-bold mb-4">توقيع الطرف الأول</p>
+          <p class="mb-2">(البائع)</p>
+          <div class="border-b-2 border-gray-400 h-16"></div>
+        </div>
+        <div class="text-center">
+        <p class="font-bold mb-2">ختم وتوقيع المعرض</p>
+        <p class="mb-2">المسؤول</p>
+        <img 
+          src="image__1_-removebg-preview.png" 
+          alt="ختم المعرض" 
+          class="mx-auto h-30 object-contain "
+        />
+      </div>
+        <div class="text-center">
+          <p class="font-bold mb-4">توقيع الطرف الثاني</p>
+          <p class="mb-2">(المشتري)</p>
+          <div class="border-b-2 border-gray-400 h-16"></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ================== البطاقات ==================
+function generateCards() {
+  const data = collectFormData();
+  generateFrontCard(data);
+  generateBackCard(data);
+}
+
+function generateFrontCard(data) {
+  const frontCard = document.getElementById('card-front');
+  frontCard.innerHTML = `
+    <div class="h-full bg-white text-black relative overflow-hidden card-text" style="font-family: Arial, sans-serif;">
+      <div class="bg-gray-800 text-white p-1 flex justify-between items-center text-[11px] font-bold border-b-2 border-yellow-500">
+        <div class="text-right pr-2">إثبات ملكية دراجة نارية</div>
+        <div class="text-left text-yellow-500 pl-2">ROAD BIKER</div>
+      </div>
+      <div class="flex justify-between items-center text-[9px] px-2 py-1 pt-2">
+        <div class="flex gap-0.5">
+          <span class="bg-yellow-500 text-black px-2 py-0.5 rounded font-bold">التاريخ</span>
+          <span class="bg-yellow-500 text-black px-2 py-0.5 rounded font-bold">${data.date.split('-').reverse().join(' / ')}</span>
+        </div>
+        <div class="flex gap-0.5">
+          <span class="bg-yellow-500 text-black px-2 py-0.5 rounded font-bold">الرقم</span>
+          <span class="bg-yellow-500 text-black px-2 py-0.5 rounded font-bold">${data.number}</span>
+        </div>
+      </div>
+
+      <div class="flex p-2" style="height: 128px;">
+        <div class="w-2/3 pr-2">
+          <div class="bg-gray-800 text-white text-center py-1 rounded text-xs font-bold mb-2">${data.bike.name}</div>
+          <div class="space-y-1 text-xs">
+            <div class="flex items-center"><span class="font-bold w-1/3 text-right">رقم الهيكل :</span><span class="w-2/3 text-center font-mono">${data.bike.frame}</span></div>
+            <div class="flex items-center"><span class="font-bold w-1/3 text-right">الموديل :</span><span class="w-2/3 text-center">${data.bike.year}</span></div>
+            <div class="flex items-center"><span class="font-bold w-1/3 text-right">اللون :</span><span class="w-2/3 text-center">${data.bike.color}</span></div>
+            <div class="flex items-center"><span class="font-bold w-1/3 text-right">الحجم :</span><span class="w-2/3 text-center">${data.bike.size}</span></div>
+          </div>
+        </div>
+
+        <div class="w-1/3 flex flex-col items-center justify-center space-y-1">
+          <div class="border-2 border-gray-600 rounded p-1 bg-white flex items-center justify-center" style="width:85px;height:90px;">
+            ${data.logo ? `<img src="${data.logo}" style="max-width:100%;max-height:100%;object-fit:contain;">` : '<div class="text-xs text-center">شعار الدراجة</div>'}
+          </div>
+          <div class="bg-yellow-500 text-black px-7 py-0.5 rounded text-[9px] font-bold">${data.cardVersion}</div>
+        </div>
+      </div>
+
+      <div class="absolute bottom-0 w-full bg-gray-800 text-white flex justify-between items-center text-[8px] border-t-2 border-yellow-500 px-2 py-1">
+        <div>www.road-biker.com</div>
+        <div>admin@road-biker.com</div>
+        <div>للدعم والمساعدة: 0500123007</div>
+      </div>
+    </div>
+  `;
+}
+
+function generateBackCard(data) {
+  const backCard = document.getElementById('card-back');
+  if (!backCard) { console.error('❌ لم أجد عنصر #card-back'); return; }
+
+  const qrText = [
+    'هذا الكرت موثق في رود بايكر',
+    `المشتري: ${data.buyer.name}`,
+    `هوية المشتري: ${data.buyer.id}`,
+    `جوال المشتري: ${data.buyer.phone}`,
+    `الدراجة: ${data.bike.name}`,
+    `رقم الهيكل: ${data.bike.frame}`,
+    `الموديل: ${data.bike.year}`,
+    `اللون: ${data.bike.color}`
+  ].join('\n');
+
+  backCard.innerHTML = `
+    <div class="h-full bg-gray-800 text-yellow-500 relative overflow-hidden card-text" style="font-family: Arial, sans-serif;">
+      <div class="text-center bg-yellow-500 text-black font-bold py-1 mb-3 border-b-2 border-wihte"><div class="text-[16px] font-bold">بيانات الملكية</div></div>
+      <div class="flex justify-between items-start px-4 py-2">
+        <div class="w-1/3 text-center space-y-1">
+          <div class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">المشتري</div>
+          <div class="bg-white text-black px-2 py-1 rounded text-xs h-6 flex items-center justify-center">${data.buyer.name}</div>
+          <div class="bg-white text-black px-2 py-1 rounded text-xs h-6 flex items-center justify-center">${data.buyer.id}</div>
+          <div class="bg-white text-black px-2 py-1 rounded text-xs h-6 flex items-center justify-center">${data.buyer.phone}</div>
+        </div>
+
+        <div class="w-1/3 flex justify-center pt-4">
+          <div id="qr-code-back" style="width:85px;height:85px;background:#ffffff;padding:2px;border-radius:4px;"></div>
+        </div>
+
+        <div class="w-1/3 text-center space-y-1">
+          <div class="bg-yellow-500 text-black px-3 py-1 rounded font-bold text-xs">البائع</div>
+          <div class="bg-white text-black px-2 py-1 rounded text-xs h-6 flex items-center justify-center">${data.seller.name}</div>
+          <div class="bg-white text-black px-2 py-1 rounded text-xs h-6 flex items-center justify-center">${data.seller.id}</div>
+          <div class="bg-white text-black px-2 py-1 rounded text-xs h-6 flex items-center justify-center">${data.seller.phone}</div>
+        </div>
+      </div>
+
+      <div class="absolute bottom-0 left-0 right-0 text-center py-1 text-xs bg-yellow-500 text-black font-bold border-t-2 border-wihte">
+        هذا الكرت إثبات ملكية فقط وليس لترخيص المرور
+      </div>
+    </div>
+  `;
+
+  const qrContainer = document.getElementById('qr-code-back');
+  if (!qrContainer) { console.error('❌ لم أجد عنصر #qr-code-back بعد التحديث'); return; }
+
+  QRCode.toDataURL(qrText, { width: 70, margin: 1, errorCorrectionLevel: 'H' }, (err, url) => {
+    if (err) { console.error(err); return; }
+    const img = new Image();
+    img.src = url;
+    img.style.width = '100%';
+    img.style.height = '100%';
+    qrContainer.innerHTML = '';
+    qrContainer.appendChild(img);
+  });
+}
+
+// ================== الطباعة ==================
+function printDeclaration() {
+  window.print();
+}
+
+// ================== أدوات مساعدة للتحميل ==================
+function waitForImages(container) {
+  const imgs = container.querySelectorAll('img');
+  return Promise.all([...imgs].map(img => img.complete ? Promise.resolve() : new Promise(res => { img.onload = img.onerror = res; })));
+}
+
+async function downloadCard(side) {
+  console.log('downloadCard invoked for:', side);
+  const cardEl = document.getElementById(`card-${side}`);
+  if (!cardEl) {
+    console.error(`❌ لم يتم العثور على card-${side}`);
+    return;
+  }
+
+  // 1) انتظر تحميل الخطوط
+  if (document.fonts && document.fonts.ready) {
+    await document.fonts.ready;
+  }
+  // 2) انتظر تحميل كل الصور داخل العنصر
+  await waitForImages(cardEl);
+
+  // 3) نحصل على الأبعاد الفعلية (بالبكسل)
+  const w = cardEl.offsetWidth;
+  const h = cardEl.offsetHeight;
+
+  // 4) نولّد صورة عالية الدقة
+  const imgData = await htmlToImage.toPng(cardEl, {
+    width:       w,
+    height:      h,
+    pixelRatio:  5,
+    backgroundColor: '#ffffff',
+    style: { margin: 0, transform: 'none' }
+  });
+
+  // 5) ننشئ الـ PDF بقياسات البطاقة (85.6×54 مم) واتجاه landscape
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({
+    unit:        'mm',
+    format:      [85.6, 54],
+    orientation: 'landscape',
+    compress:    true
+  });
+
+  // 6) نضيف الصورة لتملأ الصفحة
+  const pageW = pdf.internal.pageSize.getWidth();
+  const pageH = pdf.internal.pageSize.getHeight();
+  pdf.addImage(imgData, 'PNG', 0, 0, pageW, pageH);
+
+  // 7) ننزل الملف
+  pdf.save(`بطاقة-دراجة-${side}.pdf`);
+  showSuccessMessage();
+}
+
+function downloadBothCards() {
+  downloadCard('front');
+  setTimeout(() => downloadCard('back'), 800);
+}
+
+// ================== رسالة نجاح ==================
+function showSuccessMessage() {
+  const msg = document.getElementById('successMessage');
+  msg.style.display = 'block';
+  setTimeout(() => { msg.style.display = 'none'; }, 3000);
+}
+</script>
+
+</body>
+
+</html>
